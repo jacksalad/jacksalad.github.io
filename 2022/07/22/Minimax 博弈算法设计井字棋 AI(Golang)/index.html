@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-cn">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="计算机博弈," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址 zhuanlan.zhihu.com  Minimax 算法即极小极大值算法，是一种回溯算法，用于决策制定和博弈论。尤其是在双人之间的零和博弈中，假定两人都是绝对理性的情况下找出最佳决策方式。他广泛应用于两人回合制游戏，例如井字棋，国际象棋等。 在 Minimax 中，两人被称为最大化者和最小化者。最大化者试图获得尽可能高的分数，而最小化者试图做相反的事情并获得尽可能低的分数。 每个棋">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Minimax 博弈算法设计井字棋 AI(Golang)">
+<meta property="og:url" content="http://example.com/2022/07/22/Minimax%20%E5%8D%9A%E5%BC%88%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%BA%95%E5%AD%97%E6%A3%8B%20AI(Golang)/index.html">
+<meta property="og:site_name" content="RedJACK">
+<meta property="og:description" content="原文地址 zhuanlan.zhihu.com  Minimax 算法即极小极大值算法，是一种回溯算法，用于决策制定和博弈论。尤其是在双人之间的零和博弈中，假定两人都是绝对理性的情况下找出最佳决策方式。他广泛应用于两人回合制游戏，例如井字棋，国际象棋等。 在 Minimax 中，两人被称为最大化者和最小化者。最大化者试图获得尽可能高的分数，而最小化者试图做相反的事情并获得尽可能低的分数。 每个棋">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-8fc881bdad980c024ca124c8df7d7e1a_r.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-a30e6f5dbe9c14f9f8b1abc4762ac4d4_r.jpg">
+<meta property="article:published_time" content="2022-07-22T04:44:33.207Z">
+<meta property="article:modified_time" content="2022-07-12T00:40:56.930Z">
+<meta property="article:author" content="Jack">
+<meta property="article:tag" content="计算机博弈">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic3.zhimg.com/v2-8fc881bdad980c024ca124c8df7d7e1a_r.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2022/07/22/Minimax 博弈算法设计井字棋 AI(Golang)/"/>
+
+
+
+
+
+  <title>Minimax 博弈算法设计井字棋 AI(Golang) | RedJACK</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RedJACK</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个乐于使用技术手段探索世界本质的计算机爱好者</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/22/Minimax%20%E5%8D%9A%E5%BC%88%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%BA%95%E5%AD%97%E6%A3%8B%20AI(Golang)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://s1.ax1x.com/2022/07/12/jc4sDx.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RedJACK">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Minimax 博弈算法设计井字棋 AI(Golang)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-07-22T12:44:33+08:00">
+                2022-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>原文地址 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/474676696">zhuanlan.zhihu.com</a></p>
+</blockquote>
+<p>Minimax 算法即极小极大值算法，是一种回溯算法，用于决策制定和博弈论。尤其是在双人之间的零和博弈中，假定两人都是绝对理性的情况下找出最佳决策方式。他广泛应用于两人回合制游戏，例如井字棋，国际象棋等。</p>
+<p>在 Minimax 中，两人被称为最大化者和最小化者。最大化者试图获得尽可能高的分数，而最小化者试图做相反的事情并获得尽可能低的分数。</p>
+<p>每个棋盘状态都有一个与之关联的值。在给定的状态下，如果最大化者占上风，那么棋盘的得分将趋向于某个正值。如果最小化者在该棋盘状态下占上风，那么它往往是一些负值。棋盘的价值是通过一些启发式计算的，这些启发式对于每种类型的游戏都是独一无二的。</p>
+<h2 id="评价函数"><a href="#评价函数" class="headerlink" title="评价函数"></a><strong>评价函数</strong></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">evaluate</span><span class="params">(board [][]<span class="type">byte</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> score <span class="type">int</span></span><br><span class="line">    <span class="comment">// 计算得失</span></span><br><span class="line">    <span class="keyword">return</span> score</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于双人零和博弈游戏来说，我必须首先制定一套根据实际状态计算双方得失的函数，我们称其为评价函数。 拿棋类游戏来举例的话，就是根据当前的棋盘状态 board 制定一套计算双方得失的规则，然后计算分数 score 返回。</p>
+<h2 id="minimax-函数"><a href="#minimax-函数" class="headerlink" title="minimax 函数"></a><strong>minimax 函数</strong></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">minimax</span><span class="params">(board [][]<span class="type">byte</span>,depth <span class="type">int</span>,isMax <span class="type">bool</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    board是当前棋盘状态</span></span><br><span class="line"><span class="comment">    depth当前递归深度</span></span><br><span class="line"><span class="comment">    isMax是回合布尔值</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// 边界条件</span></span><br><span class="line">    <span class="keyword">if</span> <span class="comment">/*终端状态*/</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="comment">/*当前状态下的评价分数值*/</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 决策树的遍历</span></span><br><span class="line">    <span class="keyword">if</span> isMax &#123;</span><br><span class="line">        <span class="comment">// 最大化者的最大化评价分数的选择</span></span><br><span class="line">        score := -INFINITY</span><br><span class="line">        <span class="keyword">for</span> <span class="comment">/*当前回合的所有状态*/</span> &#123;</span><br><span class="line">            <span class="comment">// 状态假定选择</span></span><br><span class="line">            <span class="comment">// 选择撤销</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> score</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 最小化者的最小化评价分数的选择</span></span><br><span class="line">        score := +INFINITY</span><br><span class="line">        <span class="keyword">for</span> <span class="comment">/*当前回合的所有状态*/</span> &#123;</span><br><span class="line">            <span class="comment">// 状态假定选择</span></span><br><span class="line">            <span class="comment">// 选择撤销</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> score</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>max 最大化者代表我方，min 最小化者代表对手。我方要尽可能令评价分数最大化，对方要尽可能令评价分数最小化。</p>
+<p>这个函数实质上就是对决策树进行遍历，返回对我方最有利，即评价分数最高的值。</p>
+<h3 id="最佳走法函数"><a href="#最佳走法函数" class="headerlink" title="最佳走法函数"></a><strong>最佳走法函数</strong></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 决策（棋法）结构体</span></span><br><span class="line"><span class="keyword">type</span> Move <span class="keyword">struct</span> &#123;</span><br><span class="line">    Position <span class="type">int</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">findBestMove</span><span class="params">(board [][]<span class="type">byte</span>)</span></span> Move &#123;</span><br><span class="line">    <span class="keyword">var</span> bestMove Move</span><br><span class="line">    <span class="comment">// 遍历当前回合的所有决策，寻找最大值</span></span><br><span class="line">    <span class="keyword">return</span> bestMove</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用 minima 函数返回最佳决策（走法）。</p>
+<h3 id="数学原理"><a href="#数学原理" class="headerlink" title="数学原理"></a>数学原理</h3><p>$$<br>v_i &#x3D; \mathop{max}\limits_{a_i} \ \mathop{min}\limits_{a_{-i}} \ v_i(a_i,a_{-i})<br>$$</p>
+<p>$i$ 是当前玩家索引<br>$-i$ 是对手玩家索引<br>$a_i$ 代表当前玩家采取的行动<br>$a_{-i}$ 代表对手玩家采取的行动<br>$v_i$ 是当前局势状态的评估价值</p>
+<p>$v_i$ 越是大的正数代表当前局势对于玩家 $i$ 更有利，$v_i$ 越是小的的负数代表当前局势对于玩家 $-i$ 更有利</p>
+<p><strong>minimax 算法伪代码</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function  minimax(node, depth, maximizingPlayer) is</span><br><span class="line">    <span class="keyword">if</span> depth = <span class="number">0</span> or node is a terminal node then</span><br><span class="line">        <span class="keyword">return</span> the heuristic value of node</span><br><span class="line">    <span class="keyword">if</span> maximizingPlayer then</span><br><span class="line">        value := −∞</span><br><span class="line">        <span class="keyword">for</span> each child of node do</span><br><span class="line">            value := max(value, minimax(child, depth − <span class="number">1</span>, FALSE))</span><br><span class="line">        <span class="keyword">return</span> value</span><br><span class="line">    <span class="keyword">else</span> (* minimizing player *)</span><br><span class="line">        value := +∞</span><br><span class="line">        <span class="keyword">for</span> each child of node do</span><br><span class="line">            value := min(value, minimax(child, depth − <span class="number">1</span>, TRUE))</span><br><span class="line">        <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
+
+<p><strong>图解算法：实际上就是决策树的遍历过程</strong></p>
+<p><img src="https://pic3.zhimg.com/v2-8fc881bdad980c024ca124c8df7d7e1a_r.jpg"><img src="https://pic1.zhimg.com/v2-a30e6f5dbe9c14f9f8b1abc4762ac4d4_r.jpg"></p>
+<h2 id="实例代码-Go-语言"><a href="#实例代码-Go-语言" class="headerlink" title="实例代码 - Go 语言"></a>实例代码 - Go 语言</h2><p><strong>minimax 算法游戏 AI</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">​</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line">​</span><br><span class="line"><span class="comment">// 走法结构体</span></span><br><span class="line"><span class="keyword">type</span> Move <span class="keyword">struct</span> &#123;</span><br><span class="line">    row, col <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 评价函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">evaluate</span><span class="params">(board [3][3]<span class="type">byte</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="comment">// Rows</span></span><br><span class="line">    <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">        <span class="keyword">if</span> board[row][<span class="number">0</span>] == board[row][<span class="number">1</span>] &amp;&amp; board[row][<span class="number">1</span>] == board[row][<span class="number">2</span>] &#123;</span><br><span class="line">            <span class="keyword">if</span> board[row][<span class="number">0</span>] == <span class="string">&#x27;x&#x27;</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> board[row][<span class="number">0</span>] == <span class="string">&#x27;o&#x27;</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Colums</span></span><br><span class="line">    <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">        <span class="keyword">if</span> board[<span class="number">0</span>][col] == board[<span class="number">1</span>][col] &amp;&amp; board[<span class="number">1</span>][col] == board[<span class="number">2</span>][col] &#123;</span><br><span class="line">            <span class="keyword">if</span> board[<span class="number">0</span>][col] == <span class="string">&#x27;x&#x27;</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> board[<span class="number">0</span>][col] == <span class="string">&#x27;o&#x27;</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Diagonals</span></span><br><span class="line">    <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">0</span>] == board[<span class="number">1</span>][<span class="number">1</span>] &amp;&amp; board[<span class="number">1</span>][<span class="number">1</span>] == board[<span class="number">2</span>][<span class="number">2</span>] &#123;</span><br><span class="line">        <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">0</span>] == <span class="string">&#x27;x&#x27;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">0</span>] == <span class="string">&#x27;o&#x27;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">2</span>] == board[<span class="number">1</span>][<span class="number">1</span>] &amp;&amp; board[<span class="number">1</span>][<span class="number">1</span>] == board[<span class="number">2</span>][<span class="number">0</span>] &#123;</span><br><span class="line">        <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">2</span>] == <span class="string">&#x27;x&#x27;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">2</span>] == <span class="string">&#x27;o&#x27;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// minimax函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">minimax</span><span class="params">(board [3][3]<span class="type">byte</span>, isMax <span class="type">bool</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    score := evaluate(board)</span><br><span class="line">    <span class="keyword">if</span> score != <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> score</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> isFull(board) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">​    <span class="comment">// 回合判断</span></span><br><span class="line">    <span class="keyword">if</span> isMax &#123;</span><br><span class="line">        maxVal := <span class="number">-10</span></span><br><span class="line">        <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">            <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">                <span class="keyword">if</span> board[row][col] == <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">                    board[row][col] = <span class="string">&#x27;x&#x27;</span></span><br><span class="line">                    maxVal = max(maxVal, minimax(board, !isMax))</span><br><span class="line">                    board[row][col] = <span class="string">&#x27;-&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxVal</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        minVal := <span class="number">10</span></span><br><span class="line">        <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">            <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">                <span class="keyword">if</span> board[row][col] == <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">                    board[row][col] = <span class="string">&#x27;o&#x27;</span></span><br><span class="line">                    minVal = min(minVal, minimax(board, !isMax))</span><br><span class="line">                    board[row][col] = <span class="string">&#x27;-&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> minVal</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 最佳走法函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">bestMove</span><span class="params">(board [3][3]<span class="type">byte</span>)</span></span> Move &#123;</span><br><span class="line">    <span class="keyword">var</span> move Move</span><br><span class="line">    move.row, move.col = <span class="number">-1</span>, <span class="number">-1</span></span><br><span class="line">    minVal := <span class="number">10</span></span><br><span class="line">    <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">        <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">            <span class="keyword">if</span> board[row][col] == <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">                board[row][col] = <span class="string">&#x27;o&#x27;</span></span><br><span class="line">                moveVal := minimax(board, <span class="literal">true</span>)</span><br><span class="line">                board[row][col] = <span class="string">&#x27;-&#x27;</span></span><br><span class="line">                <span class="keyword">if</span> moveVal &lt; minVal &#123;</span><br><span class="line">                    move.row = row</span><br><span class="line">                    move.col = col</span><br><span class="line">                    minVal = moveVal</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println()</span><br><span class="line">    <span class="keyword">return</span> move</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 判断是否棋盘已满</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isFull</span><span class="params">(board [3][3]<span class="type">byte</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">        <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">            <span class="keyword">if</span> board[row][col] == <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">max</span><span class="params">(a, b <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> a &gt; b &#123;</span><br><span class="line">        <span class="keyword">return</span> a</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">min</span><span class="params">(a, b <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> a &lt; b &#123;</span><br><span class="line">        <span class="keyword">return</span> a</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>主程序</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">​</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line">​</span><br><span class="line"><span class="comment">// 游戏状态结构体</span></span><br><span class="line"><span class="keyword">type</span> GameState <span class="keyword">struct</span> &#123;</span><br><span class="line">    board [<span class="number">3</span>][<span class="number">3</span>]<span class="type">byte</span></span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 判断是否为空棋格</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isEmpty</span><span class="params">(board [3][3]<span class="type">byte</span>, row, col <span class="type">int</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> board[row][col] == <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 判断是否获胜</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isWin</span><span class="params">(board [3][3]<span class="type">byte</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">    <span class="comment">// Rows</span></span><br><span class="line">    <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">        <span class="keyword">if</span> board[row][<span class="number">0</span>] == board[row][<span class="number">1</span>] &amp;&amp; board[row][<span class="number">1</span>] == board[row][<span class="number">2</span>] &amp;&amp; board[row][<span class="number">0</span>] != <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Colums</span></span><br><span class="line">    <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">        <span class="keyword">if</span> board[<span class="number">0</span>][col] == board[<span class="number">1</span>][col] &amp;&amp; board[<span class="number">1</span>][col] == board[<span class="number">2</span>][col] &amp;&amp; board[<span class="number">0</span>][col] != <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Diagonals</span></span><br><span class="line">    <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">0</span>] == board[<span class="number">1</span>][<span class="number">1</span>] &amp;&amp; board[<span class="number">1</span>][<span class="number">1</span>] == board[<span class="number">2</span>][<span class="number">2</span>] &amp;&amp; board[<span class="number">0</span>][<span class="number">0</span>] != <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> board[<span class="number">0</span>][<span class="number">2</span>] == board[<span class="number">1</span>][<span class="number">1</span>] &amp;&amp; board[<span class="number">1</span>][<span class="number">1</span>] == board[<span class="number">2</span>][<span class="number">0</span>] &amp;&amp; board[<span class="number">0</span>][<span class="number">2</span>] != <span class="string">&#x27;-&#x27;</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 判断是否游戏结束</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isEnd</span><span class="params">(board [3][3]<span class="type">byte</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> isWin(board) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">        <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">            <span class="keyword">if</span> isEmpty(board, row, col) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 显示棋盘状态</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">showBoard</span><span class="params">(board [3][3]<span class="type">byte</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> row := <span class="number">0</span>; row &lt; <span class="number">3</span>; row++ &#123;</span><br><span class="line">        <span class="keyword">for</span> col := <span class="number">0</span>; col &lt; <span class="number">3</span>; col++ &#123;</span><br><span class="line">            fmt.Printf(<span class="string">&quot;%c &quot;</span>, board[row][col])</span><br><span class="line">        &#125;</span><br><span class="line">        fmt.Println()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> gs GameState</span><br><span class="line">    gs.board = [<span class="number">3</span>][<span class="number">3</span>]<span class="type">byte</span>&#123;</span><br><span class="line">        &#123;<span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;-&#x27;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;-&#x27;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;-&#x27;</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line">    showBoard(gs.board)</span><br><span class="line">    <span class="keyword">var</span> row, col <span class="type">int</span></span><br><span class="line">    <span class="keyword">for</span> !isEnd(gs.board) &#123;</span><br><span class="line">        fmt.Scanf(<span class="string">&quot;%d %d&quot;</span>, &amp;row, &amp;col)</span><br><span class="line">        <span class="keyword">if</span> isEmpty(gs.board, row, col) &#123;</span><br><span class="line">            gs.board[row][col] = <span class="string">&#x27;x&#x27;</span></span><br><span class="line">            showBoard(gs.board)</span><br><span class="line">            fmt.Println()</span><br><span class="line">            <span class="keyword">if</span> isEnd(gs.board) &#123;</span><br><span class="line">                fmt.Println(<span class="string">&quot;Game Over&quot;</span>)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">            oMove := bestMove(gs.board)</span><br><span class="line">            gs.board[oMove.row][oMove.col] = <span class="string">&#x27;o&#x27;</span></span><br><span class="line">            showBoard(gs.board)</span><br><span class="line">            fmt.Println(<span class="string">&quot;-------------------------------------------------------------------------------------------&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>控制台</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">- - - </span><br><span class="line">- - -</span><br><span class="line">- - -</span><br><span class="line">1 1</span><br><span class="line">- - - </span><br><span class="line">- x -</span><br><span class="line">- - -</span><br><span class="line">​</span><br><span class="line">o - -</span><br><span class="line">- x -</span><br><span class="line">- - -</span><br><span class="line">-----------------------------------------------------------------------------------------------------------------------</span><br><span class="line">2 0</span><br><span class="line">o - - </span><br><span class="line">- x -</span><br><span class="line">x - -</span><br><span class="line"></span><br><span class="line">o - o</span><br><span class="line">- x -</span><br><span class="line">x - -</span><br><span class="line">-----------------------------------------------------------------------------------------------------------------------</span><br><span class="line">2 2</span><br><span class="line">o - o </span><br><span class="line">- x -</span><br><span class="line">x - x</span><br><span class="line">​</span><br><span class="line">o o o</span><br><span class="line">- x -</span><br><span class="line">x - x</span><br><span class="line">-----------------------------------------------------------------------------------------------------------------------</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%9A%E5%BC%88/" rel="tag"># 计算机博弈</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/07/22/2022%E5%B9%B4%E7%94%B5%E5%B7%A5%E6%9D%AF%E6%95%B0%E6%A8%A1%E7%AB%9E%E8%B5%9BB%E9%A2%98%E7%AC%AC%E4%B8%80%E9%97%AE%E8%A7%A3%E6%B3%95%E5%88%86%E4%BA%AB%EF%BC%88%E9%99%84%20Python%20%E4%BB%A3%E7%A0%81%EF%BC%89/" rel="next" title="2022年电工杯数模竞赛B题第一问解法分享（附 Python 代码）">
+                <i class="fa fa-chevron-left"></i> 2022年电工杯数模竞赛B题第一问解法分享（附 Python 代码）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/07/22/Python%20%E4%B8%80%E5%85%83%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/" rel="prev" title="Python 一元线性回归与梯度下降">
+                Python 一元线性回归与梯度下降 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://s1.ax1x.com/2022/07/12/jc4sDx.png"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BB%B7%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">评价函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#minimax-%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">minimax 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E8%B5%B0%E6%B3%95%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">最佳走法函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%AD%A6%E5%8E%9F%E7%90%86"><span class="nav-number">2.2.</span> <span class="nav-text">数学原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E4%BB%A3%E7%A0%81-Go-%E8%AF%AD%E8%A8%80"><span class="nav-number">3.</span> <span class="nav-text">实例代码 - Go 语言</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

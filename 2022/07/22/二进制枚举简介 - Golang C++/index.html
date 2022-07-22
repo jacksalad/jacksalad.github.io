@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-cn">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="枚举," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址 zhuanlan.zhihu.com  问题类型有些问题的所有的可能状态数等于 $2^n$ (或者更多是 $2^n - 1$ ) 时，我们可以通过枚举遍历所有的可能状态，用二进制位运算来筛选符合我们条件的状态。 以下主要通过Go语言来演示，并附加参考的C++代码。这两种语言都很好的支持整数的二进制位运算与逻辑运算。 二进制：是计算技术中广泛采用的一种数制。二进制数据是用0和1两个数码来">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二进制枚举简介 - Golang C++">
+<meta property="og:url" content="http://example.com/2022/07/22/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%9E%9A%E4%B8%BE%E7%AE%80%E4%BB%8B%20-%20Golang%20C++/index.html">
+<meta property="og:site_name" content="RedJACK">
+<meta property="og:description" content="原文地址 zhuanlan.zhihu.com  问题类型有些问题的所有的可能状态数等于 $2^n$ (或者更多是 $2^n - 1$ ) 时，我们可以通过枚举遍历所有的可能状态，用二进制位运算来筛选符合我们条件的状态。 以下主要通过Go语言来演示，并附加参考的C++代码。这两种语言都很好的支持整数的二进制位运算与逻辑运算。 二进制：是计算技术中广泛采用的一种数制。二进制数据是用0和1两个数码来">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-bc93d5aa2db772c442689d4030cda389_b.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-dfb9bdac175feb0c56debe7e0bdd1afc_r.jpg">
+<meta property="article:published_time" content="2022-07-22T04:44:33.217Z">
+<meta property="article:modified_time" content="2022-07-22T04:37:27.428Z">
+<meta property="article:author" content="Jack">
+<meta property="article:tag" content="枚举">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic2.zhimg.com/v2-bc93d5aa2db772c442689d4030cda389_b.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2022/07/22/二进制枚举简介 - Golang C++/"/>
+
+
+
+
+
+  <title>二进制枚举简介 - Golang C++ | RedJACK</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RedJACK</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个乐于使用技术手段探索世界本质的计算机爱好者</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/22/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%9E%9A%E4%B8%BE%E7%AE%80%E4%BB%8B%20-%20Golang%20C++/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://s1.ax1x.com/2022/07/12/jc4sDx.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RedJACK">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">二进制枚举简介 - Golang C++</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-07-22T12:44:33+08:00">
+                2022-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c++</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/c/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>原文地址 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/478106387">zhuanlan.zhihu.com</a></p>
+</blockquote>
+<h2 id="问题类型"><a href="#问题类型" class="headerlink" title="问题类型"></a>问题类型</h2><p>有些问题的所有的可能状态数等于 $2^n$ (或者更多是 $2^n - 1$ ) 时，我们可以通过枚举遍历所有的可能状态，用二进制位运算来筛选符合我们条件的状态。</p>
+<p>以下主要通过Go语言来演示，并附加参考的C++代码。这两种语言都很好的支持整数的二进制位运算与逻辑运算。</p>
+<p><strong>二进制</strong>：是计算技术中广泛采用的一种数制。二进制数据是用0和1两个数码来表示的数。它的基数为2，进位规则是“逢二进一”，借位规则是“借一当二”。</p>
+<p><strong>子集</strong>：是一个数学概念：如果集合A的任意一个元素都是集合B的元素，那么集合A称为集合B的子集。</p>
+<ul>
+<li>含有0个元素的子集有 $C_n^0$ 个，</li>
+<li>含有1个元素的子集有 $C_n^1$ 个，</li>
+<li>含有2个元素的子集有 $C_n^2$ 个，</li>
+<li>………</li>
+<li>含有N个元素的子集有 $C_n^n$ 个</li>
+</ul>
+<p><strong>由二项式系数的性质可得</strong>：$C_n^0 + c_n^1 + C_n^2 + \dots + C_n^n &#x3D; 2^n$</p>
+<p><strong>二进制左移位运算：</strong> $1&lt;&lt;n &#x3D; 2^n$ </p>
+<p>1&lt;&lt;0&#x3D;1(0);<br>1&lt;&lt;1&#x3D;2(10);<br>1&lt;&lt;2&#x3D;4(100);<br>1&lt;&lt;3&#x3D;8(1000);<br>1&lt;&lt;4&#x3D;16(10000);<br>…<br>1&lt;&lt;7&#x3D;128(10000000);<br>…</p>
+<h3 id="整体框架"><a href="#整体框架" class="headerlink" title="整体框架"></a>整体框架</h3><p><strong>Golang</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1</span>&lt;&lt;n; i++ &#123;  <span class="comment">// 遍历枚举每一种可能的状态</span></span><br><span class="line">    <span class="keyword">for</span> j := <span class="number">0</span>; j &lt; n; j++ &#123; <span class="comment">// 检查当前状态情况</span></span><br><span class="line">        <span class="keyword">if</span> i &amp; (<span class="number">1</span>&lt;&lt;j) &gt; <span class="number">0</span> &#123;  <span class="comment">// 做二进制逻辑运算</span></span><br><span class="line">            记录该状态</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> 状态i满足我们的要求 &#123;</span><br><span class="line">        保存该状态</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> 满足要求足的状态集或状态数目</span><br></pre></td></tr></table></figure>
+
+<p><strong>C++</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; (<span class="number">1</span>&lt;&lt;n); i++) <span class="comment">// 从0～2^n-1个状态</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; j++) <span class="comment">// 遍历二进制的每一位</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(i &amp; (<span class="number">1</span> &lt;&lt; j))<span class="comment">// 判断二进制第j位是否存在</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,j);<span class="comment">// 如果存在输出第j个元素</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 后续处理</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> 满足要求足的状态集或状态数目;</span><br></pre></td></tr></table></figure>
+
+<p><strong>具体含义 (Go)</strong></p>
+<p>第一层循环：如果该问题的通过排列组合分析所有枚举情况有 $2^n$ 种（如果不存在全0的情况，即 $2^n - 1$ 种时，i 初始化为 1），则是这样的最外层循环枚举：</p>
+<p>i 不仅实现了所有可能的循环次数，它的二进制表示还枚举了所有可能的状态。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1</span>&lt;&lt;n; i++ &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二层循环：当进入某个具体的状态时 (进入第一层循环后)，我们需要通过遍历每一位整数的二进制做逻辑与运算来搞清楚此状态具体情况。</p>
+<p>假设有 5 个字母：A,B,C,D,E. 要从中至少选出一个，请问有哪些种选法？</p>
+<p>举出其中一个可能状态，并用二进制表示：</p>
+<p><img src="https://pic2.zhimg.com/v2-bc93d5aa2db772c442689d4030cda389_b.jpg"></p>
+<p>此时的外循环变量 $i &#x3D; 1\times 2^4 + 1\times 2^3 + 1\times 2^0 &#x3D; 25$ 此时列举 j &#x3D; 0 的情况，1&lt;&lt;j 是在第 j 位为 1 其他均为 0 的二进制</p>
+<p><img src="https://pic1.zhimg.com/v2-dfb9bdac175feb0c56debe7e0bdd1afc_r.jpg"></p>
+<p>如果 i &amp; (1&lt;&lt;j) &gt;0 就说明循环变量 i 的二进制第 j 位数为 1，其含义是这个选择状态下字母 E 被选中。 同样道理遍历整个循环变量 i 的二进制每一位，来搞清楚它具体指什么情况。即 i &amp; (1&lt;j) 表达式的值仅由我们想要知道的 i 二进制下的第 j 位决定。 要注意 Go 语言整数型 int 不可直接转为布尔值，所以 i &amp; (1&lt;&lt;j) &gt;0 来表达。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> j := <span class="number">0</span>; j &lt; n; j++ &#123;</span><br><span class="line">    <span class="keyword">if</span> i &amp; (<span class="number">1</span>&lt;&lt;j) &gt; <span class="number">0</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="具体案例分析"><a href="#具体案例分析" class="headerlink" title="具体案例分析"></a>具体案例分析</h3><h3 id="和为-T（二进制枚举模板）"><a href="#和为-T（二进制枚举模板）" class="headerlink" title="和为 T（二进制枚举模板）"></a>和为 T（二进制枚举模板）</h3><p><strong>问题描述</strong></p>
+<p>从一个大小为 nums 的数组中选取一些元素，使得它们的和等于给定的值 target。每个元素限选一次，不能一个都不选。</p>
+<p><strong>样例输出</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nums = [-7, -3, -2, 5, 9]</span><br><span class="line">target = 0</span><br></pre></td></tr></table></figure>
+
+<p><strong>样例输出</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">打印输出：</span><br><span class="line">-3      -2      5</span><br><span class="line">-7      -2      9</span><br><span class="line">返回值：2</span><br></pre></td></tr></table></figure>
+
+<p><strong>思路</strong></p>
+<p>这个问题很明显所有可能为 $2^n - 1$ 个，因为不能一个都不拿。所以就直接用 i 的二进制还模拟所有可能的选择情况。 当选项中有满足合为 target 的情况时输出并计数。</p>
+<p><strong>Golang</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">​</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sumTarget</span><span class="params">(nums []<span class="type">int</span>, target <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> sum <span class="type">int</span></span><br><span class="line">    n := <span class="built_in">len</span>(nums)</span><br><span class="line">    res := <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="number">1</span>&lt;&lt;n; i++ &#123;</span><br><span class="line">        sum = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> j := <span class="number">0</span>; j &lt; n; j++ &#123;</span><br><span class="line">            <span class="keyword">if</span> i&amp;(<span class="number">1</span>&lt;&lt;j) &gt; <span class="number">0</span> &#123;</span><br><span class="line">                sum += nums[j]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> sum == target &#123;</span><br><span class="line">            res++</span><br><span class="line">            <span class="keyword">for</span> j := <span class="number">0</span>; j &lt; n; j++ &#123;</span><br><span class="line">                <span class="keyword">if</span> i&amp;(<span class="number">1</span>&lt;&lt;j) &gt; <span class="number">0</span> &#123;</span><br><span class="line">                    fmt.Printf(<span class="string">&quot;%d\t&quot;</span>, nums[j])</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            fmt.Println()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    nums := []<span class="type">int</span>&#123;<span class="number">-7</span>, <span class="number">-3</span>, <span class="number">-2</span>, <span class="number">5</span>, <span class="number">9</span>&#125;</span><br><span class="line">    target := <span class="number">0</span></span><br><span class="line">    fmt.Println(sumTarget(nums, target))</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">-3      -2      5</span></span><br><span class="line"><span class="comment">-7      -2      9</span></span><br><span class="line"><span class="comment">2</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>C++</strong> 仅供参考解决思路</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> n,target;</span><br><span class="line">    <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> count = <span class="number">0</span>;</span><br><span class="line">    cin &gt;&gt; n;</span><br><span class="line">    <span class="type">int</span> nums[n];</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++)cin &gt;&gt; nums[i];</span><br><span class="line">    cin &gt;&gt; target;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; (<span class="number">1</span>&lt;&lt;n); i++) <span class="comment">//从0～2^n-1个状态</span></span><br><span class="line">    &#123;</span><br><span class="line">        sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; j++) <span class="comment">//遍历二进制的每一位</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(i &amp; (<span class="number">1</span> &lt;&lt; j))<span class="comment">//判断二进制第j位是否存在</span></span><br><span class="line">            &#123;</span><br><span class="line">                sum += nums[j];<span class="comment">//如果存在输出第j个元素</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(sum == target)</span><br><span class="line">        &#123;</span><br><span class="line">            count++; <span class="comment">//计数</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i &amp; (<span class="number">1</span> &lt;&lt; j))<span class="comment">//判断二进制第j位是否存在</span></span><br><span class="line">                &#123;</span><br><span class="line">                    cout &lt;&lt; nums[j] &lt;&lt; <span class="string">&quot;\t&quot;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            cout &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    cout &lt;&lt; count;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">5</span></span><br><span class="line"><span class="comment">-1 3 2 -5 1</span></span><br><span class="line"><span class="comment">0</span></span><br><span class="line"><span class="comment">3       2       -5</span></span><br><span class="line"><span class="comment">-1      1</span></span><br><span class="line"><span class="comment">-1      3       2       -5      1</span></span><br><span class="line"><span class="comment">3</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%9E%9A%E4%B8%BE/" rel="tag"># 枚举</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/07/22/R%E8%AF%AD%E8%A8%80%E7%BB%98%E5%88%B6%E6%B0%A2%E5%8E%9F%E5%AD%90%E5%8E%9F%E5%AD%90%E8%BD%A8%E9%81%93%E6%B3%A2%E5%87%BD%E6%95%B0/" rel="next" title="R语言绘制氢原子原子轨道波函数">
+                <i class="fa fa-chevron-left"></i> R语言绘制氢原子原子轨道波函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/07/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C%E5%8F%89%E6%A0%91%E5%85%A5%E9%97%A8Go%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="prev" title="数据结构-二叉树入门Go语言实现">
+                数据结构-二叉树入门Go语言实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://s1.ax1x.com/2022/07/12/jc4sDx.png"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">问题类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%A1%86%E6%9E%B6"><span class="nav-number">1.1.</span> <span class="nav-text">整体框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">具体案例分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%92%8C%E4%B8%BA-T%EF%BC%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%9E%9A%E4%B8%BE%E6%A8%A1%E6%9D%BF%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">和为 T（二进制枚举模板）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-cn">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="树," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址 zhuanlan.zhihu.com     之前我们一直在谈的是一对一的线性结构，可现实中，还有很多一对多的情况需要处理，所以我们需要研究这种一对多的数据结构——“树”，考虑它的各种特性，来解决我们在编程中碰到的相关问题。  树的定义树（Tree）是 n（n≥0）个结点的有限集。n&#x3D;0 时称为空树。在任意一棵非空树中：（1）有且仅有一个特定的称为_根（Root）_的结点；（">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构-二叉树入门Go语言实现">
+<meta property="og:url" content="http://example.com/2022/07/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C%E5%8F%89%E6%A0%91%E5%85%A5%E9%97%A8Go%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="RedJACK">
+<meta property="og:description" content="原文地址 zhuanlan.zhihu.com     之前我们一直在谈的是一对一的线性结构，可现实中，还有很多一对多的情况需要处理，所以我们需要研究这种一对多的数据结构——“树”，考虑它的各种特性，来解决我们在编程中碰到的相关问题。  树的定义树（Tree）是 n（n≥0）个结点的有限集。n&#x3D;0 时称为空树。在任意一棵非空树中：（1）有且仅有一个特定的称为_根（Root）_的结点；（">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-4f5c147df30f7e6bd04f1a1134c91338_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-2f3cbb57a05d126026409844a3222e35_r.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-16e6e3a566612f328a0c42f0613e52ff_r.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-7b80c21f263b0e4437a349c9c1a09d0c_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-ac3e00c775971547caf5f9670375356d_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-2f0705d1c3e267ba4dd8417d7b3912a5_r.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-c42c17b2ed34ca8cf14d8d8dd42a0ed7_r.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-30d15071b3e9ea8e74473d13d8e8a1a6_r.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-860e11224839e1c9a698e71ebcb6dc57_r.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-ad4f159e1468b0b15b00542594811b83_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-dab33c9701a1288a13092bec1ad5ef11_r.jpg">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=%5Cleft%5Clceil%5Clog+_%7B2%7D(n+1)%5Cright%5Crceil">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=%5Clfloor+i+/+2%5Crfloor+">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-c13497182c6ee8dfb1abc15fc3560f28_r.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-6713241e5fa2e9e23e657b7a1dae7d02_r.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-ee073d5877fce5b21aa142989c030b74_r.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-279156c9be957da838b5a200550109f4_r.jpg">
+<meta property="article:published_time" content="2022-07-22T04:44:33.219Z">
+<meta property="article:modified_time" content="2022-07-22T04:38:26.286Z">
+<meta property="article:author" content="Jack">
+<meta property="article:tag" content="树">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.zhimg.com/v2-4f5c147df30f7e6bd04f1a1134c91338_r.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2022/07/22/数据结构-二叉树入门Go语言实现/"/>
+
+
+
+
+
+  <title>数据结构-二叉树入门Go语言实现 | RedJACK</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RedJACK</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个乐于使用技术手段探索世界本质的计算机爱好者</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C%E5%8F%89%E6%A0%91%E5%85%A5%E9%97%A8Go%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://s1.ax1x.com/2022/07/12/jc4sDx.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RedJACK">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构-二叉树入门Go语言实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-07-22T12:44:33+08:00">
+                2022-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>原文地址 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/504426448">zhuanlan.zhihu.com</a> </p>
+</blockquote>
+<p><img src="https://pic1.zhimg.com/v2-4f5c147df30f7e6bd04f1a1134c91338_r.jpg"></p>
+<blockquote>
+<p>之前我们一直在谈的是一对一的线性结构，可现实中，还有很多一对多的情况需要处理，所以我们需要研究这种一对多的数据结构——“树”，考虑它的各种特性，来解决我们在编程中碰到的相关问题。</p>
+</blockquote>
+<h2 id="树的定义"><a href="#树的定义" class="headerlink" title="树的定义"></a><strong>树的定义</strong></h2><p><strong>树（Tree）是 n（n≥0）个结点的有限集。n&#x3D;0 时称为空树。在任意一棵非空树中：（1）有且仅有一个特定的称为_根（Root）_的结点；（2）当 n＞1 时，其余结点可分为 m（m＞0）个互不相交的有限集 T1 、T2 、……、Tm ，其中每一个集合本身又是一棵树，并且称为根的_子树（SubTree）_。</strong></p>
+<p>对于树的定义还需要强调两点：</p>
+<ol>
+<li>n&gt;0 时根结点是唯一的，不可能存在多个根结点，别和现实中的大树混在一起，现实中的树有很多根须，那是真实的树，数据结构中的树是只能有一个根结点。</li>
+<li>m&gt;0 时，子树的个数没有限制，但它们一定是互不相交的。像图 6-2-3 中的两个结构就不符合树的定义，因为它们都有相交的子树。</li>
+</ol>
+<p><img src="https://pic2.zhimg.com/v2-2f3cbb57a05d126026409844a3222e35_r.jpg"><img src="https://pic4.zhimg.com/v2-16e6e3a566612f328a0c42f0613e52ff_r.jpg"></p>
+<h3 id="结点分类"><a href="#结点分类" class="headerlink" title="结点分类"></a><strong>结点分类</strong></h3><p><strong>树的结点包含一个数据元素及若干指向其子树的分支。结点拥有的子树数称为结点的_度（De-gree）_。度为 0 的结点称为_叶结点（Leaf）_或终端结点；度不为 0 的结点称为非终端结点或_分支结点_。除根结点之外，分支结点也称为内部结点。_树的度_是树内各结点的度的最大值。</strong></p>
+<p><img src="https://pic1.zhimg.com/v2-7b80c21f263b0e4437a349c9c1a09d0c_r.jpg"></p>
+<h3 id="结点间关系"><a href="#结点间关系" class="headerlink" title="结点间关系"></a><strong>结点间关系</strong></h3><p><strong>结点的子树的根称为该结点的_孩子（Child）_，相应地，该结点称为孩子的_双亲（Parent）_。嗯，为什么不是父或母，叫双亲呢？呵呵，对于结点来说其父母同体，唯一的一个，所以只能把它称为双亲了。同一个双亲的孩子之间互称_兄弟（Sibling）_。结点的_祖先_是从根到该结点所经分支上的所有结点。反之，以某结点为根的子树中的任一结点都称为该结点的_子孙_。</strong></p>
+<p><img src="https://pic2.zhimg.com/v2-ac3e00c775971547caf5f9670375356d_r.jpg"></p>
+<h3 id="树的其他相关概念"><a href="#树的其他相关概念" class="headerlink" title="树的其他相关概念"></a><strong>树的其他相关概念</strong></h3><p><strong>结点的_层次（Level）_从根开始定义起，根为第一层，根的孩子为第二层。若某结点在第 l 层，则其子树就在第 l+1 层。其双亲在同一层的结点互为堂兄弟。树中结点的最大层次称为树的_深度_（Depth）或高度。</strong></p>
+<p><img src="https://pic2.zhimg.com/v2-2f0705d1c3e267ba4dd8417d7b3912a5_r.jpg"></p>
+<p>如果将树中结点的各子树看成从左至右是有次序的，不能互换的，则称该树为_有序树_，否则称为_无序树_。</p>
+<p>_森林_（Forest）是 m（m≥0）棵互不相交的树的集合。对树中每个结点而言，其子树的集合即为森林。</p>
+<h2 id="树的抽象数据类型"><a href="#树的抽象数据类型" class="headerlink" title="树的抽象数据类型"></a><strong>树的抽象数据类型</strong></h2><p>相对于线性结构，树的操作就完全不同了，这里我们给出一些基本和常用操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">ADT // 树(tree)</span><br><span class="line">Data    // 树是由一个根结点和若干棵子树构成。树中结点具有相同数据类型及层次关系。</span><br><span class="line">Operation</span><br><span class="line">    // 构造空树T。</span><br><span class="line">    InitTree(*T):</span><br><span class="line">    // 销毁树T。</span><br><span class="line">    DestroyTree(*T):</span><br><span class="line">    // 按definition中给出树的定义来构造树。</span><br><span class="line">    CreateTree(*T, definition):</span><br><span class="line">    // 若树T存在，则将树T清为空树。</span><br><span class="line">    ClearTree(*T):</span><br><span class="line">    // 若T为空树，返回true，否则返回false。</span><br><span class="line">    TreeEmpty(T):</span><br><span class="line">    // 返回T的深度。</span><br><span class="line">    TreeDepth(T):</span><br><span class="line">    // 返回T的根结点。</span><br><span class="line">    Root(T):</span><br><span class="line">    // cur_e是树T中一个结点，返回此结点的值。</span><br><span class="line">    Value(T, cur_e):</span><br><span class="line">    // 给树T的结点cur_e赋值为value。</span><br><span class="line">    Assign(T, cur_e, value):</span><br><span class="line">    // 若cur_e是树T的非根结点，则返回它的双亲，否则返回空。</span><br><span class="line">    Parent(T, cur_e):</span><br><span class="line">    // 若cur_e是树T的非叶结点，则返回它的最左孩子，否则返回空。</span><br><span class="line">    LeftChild(T, cur_e):</span><br><span class="line">    // 若cur_e有右兄弟，则返回它的右兄弟，否则返回空。</span><br><span class="line">    RightSibling(T, cur_e):</span><br><span class="line">    // 其中p指向树T的某个结点，i为所指结点p的度加上1，非空树c与T不相交，操作结果为插入c为树T中p指结点的第i棵子树。</span><br><span class="line">    InsertChild(*T, *p, i, c):</span><br><span class="line">    // 其中p指向树T的某个结点，i为所指结点p的度，操作结果为删除T中p所指结点的第i棵子树。</span><br><span class="line">    DeleteChild(*T, *p, i):</span><br><span class="line">endADT</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="树的存储结构"><a href="#树的存储结构" class="headerlink" title="树的存储结构"></a><strong>树的存储结构</strong></h2><p><strong>说到存储结构，就会想到我们前面章节讲过的顺序存储和链式存储两种结构。</strong></p>
+<p>树中某个结点的孩子可以有多个，这就意味着，无论按何种顺序将树中所有结点存储到数组中，结点的存储位置都无法直接反映逻辑关系，简单的顺序存储结构是不能满足树的实现要求的。</p>
+<p>不过充分利用顺序存储和链式存储结构的特点，完全可以实现对树的存储结构的表示。通常有三种不同的表示法：双亲表示法、孩子表示法、孩子兄弟表示法。需要高维顺序表，我们这里不展开讨论。</p>
+<h2 id="二叉树的定义"><a href="#二叉树的定义" class="headerlink" title="二叉树的定义"></a><strong>二叉树的定义</strong></h2><p><img src="https://pic4.zhimg.com/v2-c42c17b2ed34ca8cf14d8d8dd42a0ed7_r.jpg"></p>
+<p><strong>二叉树（Binary tree）是树形结构的一个重要类型。二叉树是 n 个有限元素的集合，该集合或者为空、或者由一个称为根（root）的元素及两个不相交的、被分别称为_左子树_和_右子树_的二叉树组成，是有序树。当集合为空时，称该二叉树为空二叉树。在二叉树中，一个元素也称作一个节点。</strong></p>
+<h3 id="二叉树的五种基本形态"><a href="#二叉树的五种基本形态" class="headerlink" title="二叉树的五种基本形态"></a><strong>二叉树的五种基本形态</strong></h3><p><img src="https://pic3.zhimg.com/v2-30d15071b3e9ea8e74473d13d8e8a1a6_r.jpg"></p>
+<h3 id="特殊二叉树"><a href="#特殊二叉树" class="headerlink" title="特殊二叉树"></a><strong>特殊二叉树</strong></h3><ol>
+<li><em>斜树</em><br>斜树一定要是斜的，所有的结点都只有左子树的二叉树叫左斜树。所有结点都是只有右子树的二叉树叫右斜树。</li>
+<li><em>满二叉树</em><br>在一棵二叉树中，如果所有分支结点都存在左子树和右子树，并且所有叶子都在同一层上，这样的二叉树称为满二叉树。深度为 k 有 2k - 1 个结点的二叉树。</li>
+<li><em>完全二叉树</em><br>对一棵具有 n 个结点的二叉树按层序编号，如果编号为 i（1≤i≤n）的结点与同样深度的满二叉树中编号为 i 的结点在二叉树中位置完全相同，则这棵二叉树称为完全二叉树。</li>
+</ol>
+<p><img src="https://pic4.zhimg.com/v2-860e11224839e1c9a698e71ebcb6dc57_r.jpg"><img src="https://pic4.zhimg.com/v2-ad4f159e1468b0b15b00542594811b83_r.jpg"><img src="https://pic2.zhimg.com/v2-dab33c9701a1288a13092bec1ad5ef11_r.jpg"></p>
+<h3 id="二叉树的性质"><a href="#二叉树的性质" class="headerlink" title="二叉树的性质"></a><strong>二叉树的性质</strong></h3><ol>
+<li>若二叉树结点的层次从 1 开始，则在二叉树第 i 层最多有 2i-1 (i&gt; 0) 个节点。</li>
+<li>深度为 k 的二叉树至少有 k 个结点，最多有 2i - 1 个结点。</li>
+<li>对任何一个二叉树，如果其叶结点有 n0 个，度为 2 的非叶结点有 n2 个，则有 n0 &#x3D; n2 + 1</li>
+<li>具有 n 个结点的完全二叉树的深度为 <img src="https://www.zhihu.com/equation?tex=%5Cleft%5Clceil%5Clog+_%7B2%7D(n+1)%5Cright%5Crceil"></li>
+<li>如将一棵有 n 个结点的完全二叉树自顶向下，同一层自左向右连续给结点编号 1,2,…，n，则有以下关系:</li>
+</ol>
+<ul>
+<li>若 i &#x3D; 1，则 i 无双亲</li>
+<li>若 i &gt; 1，则双亲为 <img src="https://www.zhihu.com/equation?tex=%5Clfloor+i+/+2%5Crfloor+"></li>
+<li>若 2<em>i ≤ n，则 i 的左子女为 2</em>i</li>
+<li>若 2<em>i+1 ≤ n，则 i 的右子女为 2</em>i+1</li>
+<li>若 i 为奇数，且 i≠1，其左兄弟为 i-1</li>
+<li>若 1 为偶数，且 i≠n，其右兄弟为 i+1</li>
+</ul>
+<h3 id="二叉树的存储表示"><a href="#二叉树的存储表示" class="headerlink" title="二叉树的存储表示"></a><strong>二叉树的存储表示</strong></h3><p><strong>顺序存储</strong></p>
+<p>二叉树的顺序存储结构就是用一维数组存储二叉树中的结点，并且结点的存储位置，也就是数组的下标要能体现结点之间的逻辑关系，比如双亲与孩子的关系，左右兄弟的关系等。</p>
+<p><img src="https://pic1.zhimg.com/v2-c13497182c6ee8dfb1abc15fc3560f28_r.jpg"></p>
+<p><strong>链式储存</strong></p>
+<p>二叉树每个结点最多有两个孩子，所以为它设计一个数据域和两个指针域是比较自然的想法，我们称这样的链表叫做二叉链表。</p>
+<p><img src="https://pic3.zhimg.com/v2-6713241e5fa2e9e23e657b7a1dae7d02_r.jpg"></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> bt <span class="keyword">struct</span> &#123;</span><br><span class="line">    Val   <span class="type">string</span></span><br><span class="line">    Left  *bt</span><br><span class="line">    Right *bt</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二叉树的遍历"><a href="#二叉树的遍历" class="headerlink" title="二叉树的遍历"></a><strong>二叉树的遍历</strong></h3><p><strong>前序遍历</strong></p>
+<ul>
+<li>V-L-R</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">preOrder</span><span class="params">(root *bt)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> root != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Print(root.Val, <span class="string">&quot; &quot;</span>)</span><br><span class="line">        preOrder(root.Left)</span><br><span class="line">        preOrder(root.Right)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>中序遍历</strong></p>
+<ul>
+<li>L-V-R</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">inOrder</span><span class="params">(root *bt)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> root != <span class="literal">nil</span> &#123;</span><br><span class="line">        inOrder(root.Left)</span><br><span class="line">        fmt.Print(root.Val, <span class="string">&quot; &quot;</span>)</span><br><span class="line">        inOrder(root.Right)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>后序遍历</strong></p>
+<ul>
+<li>L-R-V</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">posOrder</span><span class="params">(root *bt)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> root != <span class="literal">nil</span> &#123;</span><br><span class="line">        posOrder(root.Left)</span><br><span class="line">        posOrder(root.Right)</span><br><span class="line">        fmt.Print(root.Val, <span class="string">&quot; &quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码练习"><a href="#代码练习" class="headerlink" title="代码练习"></a><strong>代码练习</strong></h2><p><strong>创建如下图所示的链式二叉树，并遍历。</strong></p>
+<p><img src="https://pic1.zhimg.com/v2-ee073d5877fce5b21aa142989c030b74_r.jpg"></p>
+<ul>
+<li>对于以上二叉树的创建可以直接通过节点之间的连接实现</li>
+<li>此外我们还可以通过数组储存转为链式。</li>
+</ul>
+<p><img src="https://pic1.zhimg.com/v2-279156c9be957da838b5a200550109f4_r.jpg"></p>
+<p><em>Go 语言代码参考</em></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">​</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line">​</span><br><span class="line"><span class="comment">// 二叉树结构体</span></span><br><span class="line"><span class="keyword">type</span> bt <span class="keyword">struct</span> &#123;</span><br><span class="line">    Val   <span class="type">string</span></span><br><span class="line">    Left  *bt</span><br><span class="line">    Right *bt</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 数组建立链式二叉树递归实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateTree</span><span class="params">(dataLst []<span class="type">string</span>, i <span class="type">int</span>)</span></span> *bt &#123;</span><br><span class="line">    node := &amp;bt&#123;dataLst[i], <span class="literal">nil</span>, <span class="literal">nil</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="number">2</span>*i &lt; <span class="built_in">len</span>(dataLst) &amp;&amp; dataLst[<span class="number">2</span>*i] != <span class="string">&quot;-&quot;</span> &#123;</span><br><span class="line">        node.Left = CreateTree(dataLst, <span class="number">2</span>*i)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="number">2</span>*i+<span class="number">1</span> &lt; <span class="built_in">len</span>(dataLst) &amp;&amp; dataLst[<span class="number">2</span>*i+<span class="number">1</span>] != <span class="string">&quot;-&quot;</span> &#123;</span><br><span class="line">        node.Right = CreateTree(dataLst, <span class="number">2</span>*i+<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> node</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 数组建立链式二叉树非递归实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateTree_</span><span class="params">(dataLst []<span class="type">string</span>)</span></span> *bt &#123;</span><br><span class="line">    n := <span class="built_in">len</span>(dataLst)</span><br><span class="line">    nodeLst := <span class="built_in">make</span>([]*bt, n)</span><br><span class="line">    <span class="comment">// 创建二叉树节点指针数组</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">1</span>; i &lt; n; i++ &#123;</span><br><span class="line">        <span class="keyword">if</span> dataLst[i] != <span class="string">&quot;-&quot;</span> &#123;</span><br><span class="line">            nodeLst[i] = &amp;bt&#123;dataLst[i], <span class="literal">nil</span>, <span class="literal">nil</span>&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 连接二叉树左右节点</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">1</span>; i &lt; n; i++ &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="number">2</span>*i+<span class="number">1</span> &lt; n &#123;</span><br><span class="line">            nodeLst[i].Left = nodeLst[<span class="number">2</span>*i]</span><br><span class="line">            nodeLst[i].Right = nodeLst[<span class="number">2</span>*i+<span class="number">1</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nodeLst[<span class="number">1</span>]</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 前序遍历</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">preOrder</span><span class="params">(root *bt)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> root != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Print(root.Val, <span class="string">&quot; &quot;</span>)</span><br><span class="line">        preOrder(root.Left)</span><br><span class="line">        preOrder(root.Right)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 中序遍历</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">inOrder</span><span class="params">(root *bt)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> root != <span class="literal">nil</span> &#123;</span><br><span class="line">        inOrder(root.Left)</span><br><span class="line">        fmt.Print(root.Val, <span class="string">&quot; &quot;</span>)</span><br><span class="line">        inOrder(root.Right)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="comment">// 后序遍历</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">posOrder</span><span class="params">(root *bt)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> root != <span class="literal">nil</span> &#123;</span><br><span class="line">        posOrder(root.Left)</span><br><span class="line">        posOrder(root.Right)</span><br><span class="line">        fmt.Print(root.Val, <span class="string">&quot; &quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 直接创建二叉树</span></span><br><span class="line">    root := &amp;bt&#123;</span><br><span class="line">        <span class="string">&quot;A&quot;</span>,</span><br><span class="line">        &amp;bt&#123;<span class="string">&quot;B&quot;</span>, &amp;bt&#123;<span class="string">&quot;D&quot;</span>, &amp;bt&#123;<span class="string">&quot;H&quot;</span>, <span class="literal">nil</span>, <span class="literal">nil</span>&#125;, &amp;bt&#123;<span class="string">&quot;I&quot;</span>, <span class="literal">nil</span>, <span class="literal">nil</span>&#125;&#125;, &amp;bt&#123;<span class="string">&quot;E&quot;</span>, <span class="literal">nil</span>, <span class="literal">nil</span>&#125;&#125;,</span><br><span class="line">        &amp;bt&#123;<span class="string">&quot;C&quot;</span>, &amp;bt&#123;<span class="string">&quot;F&quot;</span>, &amp;bt&#123;<span class="string">&quot;J&quot;</span>, <span class="literal">nil</span>, <span class="literal">nil</span>&#125;, <span class="literal">nil</span>&#125;, &amp;bt&#123;<span class="string">&quot;G&quot;</span>, <span class="literal">nil</span>, <span class="literal">nil</span>&#125;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line">    preOrder(root) <span class="comment">// A B D H I E C F J G</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    inOrder(root) <span class="comment">// H D I B E A J F C G</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    posOrder(root) <span class="comment">// H I D E B J F G C A</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    fmt.Println(<span class="string">&quot;-------------------&quot;</span>)</span><br><span class="line">    <span class="comment">// 数组非递归创建二叉树</span></span><br><span class="line">    dl := []<span class="type">string</span>&#123;<span class="string">&quot;-&quot;</span>, <span class="string">&quot;A&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;C&quot;</span>, <span class="string">&quot;D&quot;</span>, <span class="string">&quot;E&quot;</span>, <span class="string">&quot;F&quot;</span>, <span class="string">&quot;G&quot;</span>, <span class="string">&quot;H&quot;</span>, <span class="string">&quot;I&quot;</span>, <span class="string">&quot;-&quot;</span>, <span class="string">&quot;-&quot;</span>, <span class="string">&quot;J&quot;</span>, <span class="string">&quot;-&quot;</span>, <span class="string">&quot;-&quot;</span>, <span class="string">&quot;-&quot;</span>&#125;</span><br><span class="line">    root_ := CreateTree(dl, <span class="number">1</span>)</span><br><span class="line">    preOrder(root_) <span class="comment">// A B D H I E C F J G</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    inOrder(root_) <span class="comment">// H D I B E A J F C G</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    posOrder(root_) <span class="comment">// H I D E B J F G C A</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    fmt.Println(<span class="string">&quot;-------------------&quot;</span>)</span><br><span class="line">    root__ := CreateTree_(dl)</span><br><span class="line">    preOrder(root__) <span class="comment">// A B D H I E C F J G</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    inOrder(root__) <span class="comment">// H D I B E A J F C G</span></span><br><span class="line">    fmt.Println()</span><br><span class="line">    posOrder(root__) <span class="comment">// H I D E B J F G C A</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%A0%91/" rel="tag"># 树</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/07/22/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%9E%9A%E4%B8%BE%E7%AE%80%E4%BB%8B%20-%20Golang%20C++/" rel="next" title="二进制枚举简介 - Golang C++">
+                <i class="fa fa-chevron-left"></i> 二进制枚举简介 - Golang C++
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://s1.ax1x.com/2022/07/12/jc4sDx.png"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">树的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E7%82%B9%E5%88%86%E7%B1%BB"><span class="nav-number">1.1.</span> <span class="nav-text">结点分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E7%82%B9%E9%97%B4%E5%85%B3%E7%B3%BB"><span class="nav-number">1.2.</span> <span class="nav-text">结点间关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%91%E7%9A%84%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.</span> <span class="nav-text">树的其他相关概念</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E7%9A%84%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">树的抽象数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E7%9A%84%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">树的存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">4.</span> <span class="nav-text">二叉树的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E4%BA%94%E7%A7%8D%E5%9F%BA%E6%9C%AC%E5%BD%A2%E6%80%81"><span class="nav-number">4.1.</span> <span class="nav-text">二叉树的五种基本形态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E4%BA%8C%E5%8F%89%E6%A0%91"><span class="nav-number">4.2.</span> <span class="nav-text">特殊二叉树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">4.3.</span> <span class="nav-text">二叉树的性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%AD%98%E5%82%A8%E8%A1%A8%E7%A4%BA"><span class="nav-number">4.4.</span> <span class="nav-text">二叉树的存储表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86"><span class="nav-number">4.5.</span> <span class="nav-text">二叉树的遍历</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%83%E4%B9%A0"><span class="nav-number">5.</span> <span class="nav-text">代码练习</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
